@@ -73,8 +73,21 @@ def main(args):
         np.save(log_dir / "queries_descriptors.npy", queries_descriptors)
         np.save(log_dir / "database_descriptors.npy", database_descriptors)
 
-    # Use a kNN to find predictions
-    faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
+    # --- Select distance metric ---
+    if args.distance == "l2":
+        faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
+    elif args.distance == "dot":
+        # Dot product = inner product
+        # FAISS searches for MAX inner product
+        faiss_index = faiss.IndexFlatIP(args.descriptors_dimension)
+
+        # normalize descriptors for cosine similarity
+        faiss.normalize_L2(database_descriptors)
+        faiss.normalize_L2(queries_descriptors)
+
+    else:
+        raise ValueError(f"Unknown distance metric {args.distance}")
+
     faiss_index.add(database_descriptors)
     del database_descriptors, all_descriptors
 

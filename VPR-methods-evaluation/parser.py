@@ -11,6 +11,13 @@ def parse_arguments():
         help="distance (in meters) for a prediction to be considered a positive",
     )
     parser.add_argument(
+        "--distance",
+        type=str,
+        default="l2",
+        choices=["l2", "dot"],
+        help="Distance metric for retrieval"
+    )
+    parser.add_argument(
         "--method",
         type=str,
         default="megaloc",
