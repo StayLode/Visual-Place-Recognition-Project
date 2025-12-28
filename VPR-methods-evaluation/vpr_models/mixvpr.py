@@ -93,6 +93,29 @@ class MixVPR(nn.Module):
 ### Implement ResNet-50 here for MixVPR model,
 ### otherwise `self.backbone = ResNet()` will fail
 ### (academic purpose)
+class ResNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        backbone = torchvision.models.resnet50(
+            weights=torchvision.models.ResNet50_Weights.IMAGENET1K_V1
+        )
+
+        # Keep only convolutional layers up to layer3
+        self.backbone = nn.Sequential(
+            backbone.conv1,
+            backbone.bn1,
+            backbone.relu,
+            backbone.maxpool,
+            backbone.layer1,
+            backbone.layer2,
+            backbone.layer3,
+        )
+
+        self.out_channels = 1024
+
+    def forward(self, x):
+        return self.backbone(x)
 
 
 class MixVPRModel(torch.nn.Module):
