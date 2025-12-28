@@ -13,8 +13,8 @@ def parse_arguments():
     parser.add_argument(
         "--distance",
         type=str,
-        default="l2",
-        choices=["l2", "dot"],
+        default="L2",
+        choices=["L2", "dot"],
         help="Distance metric for retrieval"
     )
     parser.add_argument(

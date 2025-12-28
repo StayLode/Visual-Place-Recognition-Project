@@ -74,7 +74,7 @@ def main(args):
         np.save(log_dir / "database_descriptors.npy", database_descriptors)
 
     # --- Select distance metric ---
-    if args.distance == "l2":
+    if args.distance == "L2":
         faiss_index = faiss.IndexFlatL2(args.descriptors_dimension)
     elif args.distance == "dot":
         # Dot product = inner product
