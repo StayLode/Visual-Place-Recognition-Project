@@ -97,25 +97,24 @@ class ResNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        backbone = torchvision.models.resnet50(
+        self.model = torchvision.models.resnet50(
             weights=torchvision.models.ResNet50_Weights.IMAGENET1K_V1
-        )
-
-        # Keep only convolutional layers up to layer3
-        self.backbone = nn.Sequential(
-            backbone.conv1,
-            backbone.bn1,
-            backbone.relu,
-            backbone.maxpool,
-            backbone.layer1,
-            backbone.layer2,
-            backbone.layer3,
         )
 
         self.out_channels = 1024
 
     def forward(self, x):
-        return self.backbone(x)
+        # Copiato ESATTAMENTE dal forward originale, ma fermato a layer3
+        x = self.model.conv1(x)
+        x = self.model.bn1(x)
+        x = self.model.relu(x)
+        x = self.model.maxpool(x)
+
+        x = self.model.layer1(x)
+        x = self.model.layer2(x)
+        x = self.model.layer3(x)
+
+        return x 
 
 
 class MixVPRModel(torch.nn.Module):
@@ -148,7 +147,7 @@ def get_mixvpr(descriptors_dimension):
         os.makedirs("trained_models/mixvpr", exist_ok=True)
         gdown.download(url=url, output=file_path, fuzzy=True)
     state_dict = torch.load(file_path)
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, strict=False)
     model = model.eval()
 
     return model
