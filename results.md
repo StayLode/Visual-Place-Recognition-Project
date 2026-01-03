@@ -20,3 +20,14 @@ SF-XS
 | MixVPR   | ResNet50 | dot-product | 69.6 | 78.7 | 81.1 | 83.6 |             |
 | MegaLoc  | DINOv2   | L2          | 86.9 | 90.4 | 91.2 | 91.5 |             |
 | MegaLoc  | DINOv2   | dot-product | 86.9 | 90.4 | 91.2 | 91.5 |             |
+SVOX - Sun
+| Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
+| -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
+| NetVlad  | vgg16    | L2          | 37.1 | 54.4 | 62.2 | 69.0 |       08:29 |
+| NetVlad  | vgg16    | dot-product | 37.1 | 54.4 | 62.2 | 69.0 |       08:33 |
+| CosPlace | ResNet50 | L2          | 73.3 | 83.8 | 87.9 | 91.4 |       04:52 |
+| CosPlace | ResNet50 | dot-product | 77.0 | 89.0 | 92.4 | 95.0 |       04:50 |
+| MixVPR   | ResNet50 | L2          | 77.0 | 89.0 | 92.4 | 95.0 |       03:12 |
+| MixVPR   | ResNet50 | dot-product | 84.4 | 92.7 | 94.6 | 95.4 |       03:13 |
+| MegaLoc  | DINOv2   | L2          | 97.2 | 99.3 | 99.5 | 99.6 |       30:12 |
+| MegaLoc  | DINOv2   | dot-product | 97.2 | 99.3 | 99.5 | 99.6 |       30:02 |
