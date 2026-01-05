@@ -37,7 +37,7 @@ SVOX - Night
 | NetVlad  | vgg16    | L2          | 8.5  | 18.2 | 22.7 | 28.5 |       08:39 |
 | NetVlad  | vgg16    | dot-product | 8.5  | 18.2 | 22.7 | 28.5 |       08:41 |
 | CosPlace | ResNet50 | L2          | 49.2 | 66.1 | 72.8 | 78.6 |       04:52 |
-| CosPlace | ResNet50 | dot-product | 77.0 | 89.0 | 92.4 | 78.6 |       04:58 |
+| CosPlace | ResNet50 | dot-product | 49.2 | 66.1 | 72.8 | 78.6 |       04:58 |
 | MixVPR   | ResNet50 | L2          | 62.6 | 80.6 | 83.8 | 87.4 |       03:20 |
 | MixVPR   | ResNet50 | dot-product | 62.6 | 80.6 | 83.8 | 87.4 |       03:21 |
 | MegaLoc  | DINOv2   | L2          | 96.5 | 98.7 | 99.0 | 99.3 |       30:19 |
