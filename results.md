@@ -42,3 +42,14 @@ SVOX - Night
 | MixVPR   | ResNet50 | dot-product | 62.6 | 80.6 | 83.8 | 87.4 |       03:21 |
 | MegaLoc  | DINOv2   | L2          | 96.5 | 98.7 | 99.0 | 99.3 |       30:19 |
 | MegaLoc  | DINOv2   | dot-product | 96.5 | 98.7 | 99.0 | 99.3 |       30:18 |
+SVOX - Full
+| Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
+| -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
+| NetVlad  | vgg16    | L2          | 86.6 | 93.7 | 95.5 | 96.9 |       17:52 |
+| NetVlad  | vgg16    | dot-product | 86.6 | 93.7 | 95.5 | 96.9 |       17:53 |
+| CosPlace | ResNet50 | L2          | xx.x | xx.x | xx.x | xx.x |       xx:xx |
+| CosPlace | ResNet50 | dot-product | xx.x | xx.x | xx.x | xx.x |       xx:xx |
+| MixVPR   | ResNet50 | L2          | 97.8 | 98.9 | 99.2 | 99.3 |       06:55 |
+| MixVPR   | ResNet50 | dot-product | 97.8 | 98.9 | 99.2 | 99.3 |       06:58 |
+| MegaLoc  | DINOv2   | L2          | 98.7 | 99.5 | 99.6 | 99.7 |       55:49 |
+| MegaLoc  | DINOv2   | dot-product | xx.x | xx.x | xx.x | xx.x |       xx:xx |
