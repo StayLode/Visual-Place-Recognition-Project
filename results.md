@@ -47,9 +47,9 @@ SVOX - Full
 | -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
 | NetVlad  | vgg16    | L2          | 86.6 | 93.7 | 95.5 | 96.9 |       17:52 |
 | NetVlad  | vgg16    | dot-product | 86.6 | 93.7 | 95.5 | 96.9 |       17:53 |
-| CosPlace | ResNet50 | L2          | xx.x | xx.x | xx.x | xx.x |       xx:xx |
-| CosPlace | ResNet50 | dot-product | xx.x | xx.x | xx.x | xx.x |       xx:xx |
+| CosPlace | ResNet50 | L2          | 97.1 | 98.4 | 98.7 | 99.0 |       08:22 |
+| CosPlace | ResNet50 | dot-product | 97.1 | 98.4 | 98.7 | 99.0 |       08:23 |
 | MixVPR   | ResNet50 | L2          | 97.8 | 98.9 | 99.2 | 99.3 |       06:55 |
 | MixVPR   | ResNet50 | dot-product | 97.8 | 98.9 | 99.2 | 99.3 |       06:58 |
 | MegaLoc  | DINOv2   | L2          | 98.7 | 99.5 | 99.6 | 99.7 |       55:49 |
-| MegaLoc  | DINOv2   | dot-product | xx.x | xx.x | xx.x | xx.x |       xx:xx |
+| MegaLoc  | DINOv2   | dot-product | 98.7 | 99.5 | 99.6 | 99.7 |       52:55 |
