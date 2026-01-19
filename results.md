@@ -10,6 +10,23 @@
 | MegaLoc  | DINOv2   | L2          | 95.6 | 97.8 | 98.7 | 99.0 |       21:29 |
 | MegaLoc  | DINOv2   | dot-product | 95.6 | 97.8 | 98.7 | 99.0 |       21:35 |
 
+**Tokyo-XS (L2) - Image Matching**
+| Method   | Backbone | Matcher              |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
+| -------- | -------- | -------------------- | ---: | ---: | ---: | ---: | ----------: |
+| NetVlad  | vgg16    | SuperPoint+LightGlue | 68.9 | 71.7 | 73.0 | 74.6 |       18:42 |
+| NetVlad  | vgg16    | Superglue            | 67.0 | 71.1 | 72.7 | 74.6 |       07:34 |
+| NetVlad  | vgg16    | LoFTR                | 68.9 | 70.8 | 73.0 | 74.6 |       19:41 |
+| CosPlace | ResNet50 | SuperPoint+LightGlue | 86.0 | 89.2 | 89.8 | 91.4 |       18:43 |
+| CosPlace | ResNet50 | Superglue            | 84.8 | 88.6 | 90.2 | 91.4 |       07:25 |
+| CosPlace | ResNet50 | LoFTR                | 86.7 | 89.2 | 90.5 | 91.4 |       19:42 |
+| MixVPR   | ResNet50 | SuperPoint+LightGlue | 89.2 | 92.4 | 94.0 | 94.3 |       18:41 |
+| MixVPR   | ResNet50 | Superglue            | 87.0 | 92.4 | 93.3 | 94.3 |       07:33 |
+| MixVPR   | ResNet50 | LoFTR                | 90.5 | 92.7 | 94.0 | 94.3 |       19:44 |
+| MegaLoc  | DINOv2   | SuperPoint+LightGlue | 94.3 | 98.4 | 98.7 | 99.0 |       18:16 |
+| MegaLoc  | DINOv2   | Superglue            | 93.0 | 98.1 | 98.4 | 99.0 |       07:25 |
+| MegaLoc  | DINOv2   | LoFTR                | 94.3 | 97.8 | 98.7 | 99.0 |       19:05 |
+
+
 **SF-XS**
 | Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
 | -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
@@ -37,8 +54,8 @@
 **SVOX - Night**
 | Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
 | -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
-| NetVlad  | vgg16    | L2          | 8.5  | 18.2 | 22.7 | 28.5 |       08:36 |
-| NetVlad  | vgg16    | dot-product | 8.5  | 18.2 | 22.7 | 28.5 |       08:38 |
+| NetVlad  | vgg16    | L2          |  8.5 | 18.2 | 22.7 | 28.5 |       08:36 |
+| NetVlad  | vgg16    | dot-product |  8.5 | 18.2 | 22.7 | 28.5 |       08:38 |
 | CosPlace | ResNet50 | L2          | 49.2 | 66.1 | 72.8 | 78.6 |       04:57 |
 | CosPlace | ResNet50 | dot-product | 49.2 | 66.1 | 72.8 | 78.6 |       04:57 |
 | MixVPR   | ResNet50 | L2          | 62.6 | 80.6 | 83.8 | 87.4 |       03:17 |
