@@ -79,6 +79,21 @@
 | MixVPR   | ResNet50 | dot-product | 62.6 | 80.6 | 83.8 | 87.4 |       03:18 |
 | MegaLoc  | DINOv2   | L2          | 96.5 | 98.7 | 99.0 | 99.3 |       30:14 |
 | MegaLoc  | DINOv2   | dot-product | 96.5 | 98.7 | 99.0 | 99.3 |       30:13 |
+**SVOX - Night (L2) - Image Matching**
+| Method   | Backbone | Matcher              |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
+| -------- | -------- | -------------------- | ---: | ---: | ---: | ---: | ----------: |
+| NetVlad  | vgg16    | SuperPoint+LightGlue | 24.3 | 27.3 | 28.6 | 29.5 |       48:33 |
+| NetVlad  | vgg16    | Superglue            | 24.8 | 27.1 | 28.4 | 29.5 |       19:58 |
+| NetVlad  | vgg16    | LoFTR                | 25.3 | 27.8 | 28.7 | 29.5 |       50:20 |
+| CosPlace | ResNet50 | SuperPoint+LightGlue | 72.2 | 75.8 | 77.4 | 78.6 |       50:10 |
+| CosPlace | ResNet50 | Superglue            | 71.3 | 75.7 | 76.9 | 78.6 |       20:57 |
+| CosPlace | ResNet50 | LoFTR                | 72.2 | 77.0 | 78.1 | 78.6 |       53:08 |
+| MixVPR   | ResNet50 | SuperPoint+LightGlue | 81.2 | 85.7 | 86.4 | 87.4 |       50:06 |
+| MixVPR   | ResNet50 | Superglue            | 81.0 | 85.7 | 86.9 | 87.4 |       20:54 |
+| MixVPR   | ResNet50 | LoFTR                | 82.0 | 86.0 | 86.9 | 87.4 |       52:47 |
+| MegaLoc  | DINOv2   | SuperPoint+LightGlue | 91.1 | 97.4 | 98.9 | 99.3 |       50:05 |
+| MegaLoc  | DINOv2   | Superglue            | 90.5 | 97.6 | 98.7 | 99.3 |       21:03 |
+| MegaLoc  | DINOv2   | LoFTR                | 92.6 | 98.5 | 99.0 | 99.3 |       52:49 |
 
 **SVOX - Full**
 | Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
