@@ -68,6 +68,22 @@
 | MegaLoc  | DINOv2   | L2          | 97.2 | 99.3 | 99.5 | 99.6 |       30:12 |
 | MegaLoc  | DINOv2   | dot-product | 97.2 | 99.3 | 99.5 | 99.6 |       30:02 |
 
+**SVOX - Sun (L2) - Image Matching**
+| Method   | Backbone | Matcher              |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
+| -------- | -------- | -------------------- | ---: | ---: | ---: | ---: | ----------: |
+| NetVlad  | vgg16    | SuperPoint+LightGlue | 65.1 | 66.5 | 67.9 | 69.0 |       50:12 |
+| NetVlad  | vgg16    | Superglue            | 64.3 | 66.3 | 67.4 | 69.0 |       21:10 |
+| NetVlad  | vgg16    | LoFTR                | 64.6 | 66.9 | 67.8 | 69.0 |       52:19 |
+| CosPlace | ResNet50 | SuperPoint+LightGlue | 90.4 | 93.4 | 94.6 | 95.0 |       50:19 |
+| CosPlace | ResNet50 | Superglue            | 87.6 | 92.6 | 94.3 | 95.0 |       20:52 |
+| CosPlace | ResNet50 | LoFTR                | 92.0 | 93.8 | 94.5 | 95.0 |       52:57 |
+| MixVPR   | ResNet50 | SuperPoint+LightGlue | 91.7 | 94.4 | 95.1 | 95.4 |       49:58 |
+| MixVPR   | ResNet50 | Superglue            | 89.6 | 93.6 | 95.0 | 95.4 |       20:54 |
+| MixVPR   | ResNet50 | LoFTR                | 93.1 | 94.6 | 95.2 | 95.4 |       52:16 |
+| MegaLoc  | DINOv2   | SuperPoint+LightGlue | 96.0 | 99.1 | 99.4 | 99.6 |       50:27 |
+| MegaLoc  | DINOv2   | Superglue            | 93.8 | 98.7 | 99.4 | 99.6 |       21:25 |
+| MegaLoc  | DINOv2   | LoFTR                | 97.3 | 99.3 | 99.5 | 99.6 |       52:56 |
+
 **SVOX - Night**
 | Method   | Backbone | Metric      |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
 | -------- | -------- | ----------- | ---: | ---: | ---: | ---: | ----------: |
@@ -79,6 +95,7 @@
 | MixVPR   | ResNet50 | dot-product | 62.6 | 80.6 | 83.8 | 87.4 |       03:18 |
 | MegaLoc  | DINOv2   | L2          | 96.5 | 98.7 | 99.0 | 99.3 |       30:14 |
 | MegaLoc  | DINOv2   | dot-product | 96.5 | 98.7 | 99.0 | 99.3 |       30:13 |
+
 **SVOX - Night (L2) - Image Matching**
 | Method   | Backbone | Matcher              |  R@1 |  R@5 | R@10 | R@20 | TIME(mm:ss) |
 | -------- | -------- | -------------------- | ---: | ---: | ---: | ---: | ----------: |
