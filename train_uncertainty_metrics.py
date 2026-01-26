@@ -13,6 +13,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve, auc,r2_score
 from scipy.stats import spearmanr
 
+from sklearn.model_selection import train_test_split
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from util import get_list_distances_from_preds
@@ -122,29 +124,6 @@ def sue_variance_per_query(ref_poses, preds, dists, num_NN=10, slope=350.0):
 def auprc_from_scores(y_true, scores):
     precision, recall, _ = precision_recall_curve(y_true, scores)
     return auc(recall, precision)
-
-
-def split_indices(N, val_ratio=0.15, mode="contiguous", seed=42):
-    """
-    mode:
-      - contiguous: primi (1-val_ratio) train, ultimi val
-      - random: shuffle con seed
-    """
-    idx = np.arange(N)
-
-    val_size = int(np.floor(N * val_ratio))
-    if val_size <= 0 or val_size >= N:
-        raise ValueError(f"val_ratio={val_ratio} produce val_size={val_size}, non valido per N={N}")
-
-    if mode == "random":
-        rng = np.random.default_rng(seed)
-        rng.shuffle(idx)
-
-    # train = idx[:-val], val = idx[-val:]
-    idx_train = idx[:-val_size]
-    idx_val = idx[-val_size:]
-    return idx_train, idx_val
-
 
 def aurc_from_conf(y_correct, conf_scores):
     """
@@ -264,11 +243,11 @@ def make_features(inliers_scores, preds, ref_poses, dists, features,
 
             if gate_T is None:
                 # comportamento vecchio (se non vuoi gating)
-                feats.append(l2)
+                feats.append(-l2)
                 names.append("l2")
             else:
                 g = (inliers_scores.astype(np.float32) < float(gate_T)).astype(np.float32)
-                feats.append(g * l2)
+                feats.append(g * -l2)
                 names.append("gated l2")
         elif f == "pa":
             pa = np.array([float(dists[i][0]) / (float(dists[i][1]) + 1e-9) for i in range(N)], dtype=np.float32)
@@ -369,8 +348,9 @@ def main(args):
 
     # === Split train -> train/val ===
     Ntr = len(y_train_all)
-    idx_tr, idx_val = split_indices(Ntr, val_ratio=args.val_ratio, mode=args.split_mode, seed=args.seed)
-    
+
+    idx_tr, idx_val = train_test_split(np.arange(Ntr),test_size=args.val_ratio,random_state=args.seed,shuffle=True)
+
     gate_percentiles = [float(x.strip()) for x in args.gate_percentiles.split(",") if x.strip()]
     inl_tr = inliers_train_all[idx_tr]
     T_candidates = [np.percentile(inl_tr, p) for p in gate_percentiles]
