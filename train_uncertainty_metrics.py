@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-# eval_trainval_split.py
 import math
 import os, argparse, sys
 import numpy as np
 from glob import glob
 from pathlib import Path
 import torch
-
+import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_curve, auc,r2_score
+from sklearn.metrics import precision_recall_curve, auc
 from scipy.stats import spearmanr
-
 from sklearn.model_selection import train_test_split
 
 sys.path.append(str(Path(__file__).parent.parent))
@@ -21,15 +19,27 @@ from util import get_list_distances_from_preds
 from vpr_uncertainty.baselines import compute_l2, compute_pa, compute_sue, compute_random
 
 np.random.seed(42)
-
+EPS = 1e-9
 
 def list_query_txts(preds_dir: str):
+    """
+    Lists all .txt files in preds_dir, sorted by query index.
+    Returns:
+        list of .txt file paths
+    """
     txt_files = glob(os.path.join(preds_dir, "*.txt"))
     txt_files.sort(key=lambda x: int(Path(x).stem))  # assumes 0.txt, 1.txt, ...
     return txt_files
 
 
 def load_z_data(z_data_path: str):
+    """
+    Loads z_data torch file.
+    Returns:
+        ref_poses: (M, 2) reference poses
+        preds: list of (K,) predicted indices per query
+        dists: list of (K,) predicted distances per query
+    """
     d = torch.load(z_data_path, weights_only=False)
     ref_poses = d["database_utms"]
     preds = d["predictions"]
@@ -39,10 +49,13 @@ def load_z_data(z_data_path: str):
 
 def build_arrays(preds_dir, inliers_dir, z_data_path, positive_dist_threshold):
     """
-    Costruisce:
-      matched: 1 se top-1 corretto (<= threshold), 0 altrimenti
-      inliers_scores: num_inliers
-      ref_poses, preds, dists: da z_data
+    Builds arrays needed for uncertainty metrics computation.
+    Returns:
+        matched: (N,) 1.0 if correct, 0.0 if wrong
+        inliers_scores: (N,) number of inliers per query
+        ref_poses: (M, 2) reference poses
+        preds: list of (K,) predicted indices per query
+        dists: list of (K,) predicted distances per query
     """
     preds_folder = preds_dir
     inliers_folder = Path(inliers_dir)
@@ -56,7 +69,7 @@ def build_arrays(preds_dir, inliers_dir, z_data_path, positive_dist_threshold):
     if len(preds) != total_queries:
         raise RuntimeError(
             f"Mismatch: {total_queries} .txt files but z_data has {len(preds)} queries. "
-            f"Assicurati che preds_dir e z_data_path siano dello stesso split."
+            f"Check that the predictions directory and z_data correspond to the same split."
         )
 
     matched = np.zeros(total_queries, dtype="float32")
@@ -73,9 +86,18 @@ def build_arrays(preds_dir, inliers_dir, z_data_path, positive_dist_threshold):
     return matched, inliers_scores, ref_poses, preds, dists
 
 
-EPS = 1e-9
-
 def sue_variance_per_query(ref_poses, preds, dists, num_NN=10, slope=350.0):
+    """
+    Computes SUE variance per query.
+    Args:
+        ref_poses: (M, 2) reference poses
+        preds: list of (K,) predicted indices per query
+        dists: list of (K,) predicted distances per query
+        num_NN: number of nearest neighbors to consider
+        slope: slope parameter for weight computation
+    Returns:
+        sue_var: (N,) SUE variance per query
+    """
     total_queries = len(preds)
     sue_var = np.zeros(total_queries, dtype=np.float32)
 
@@ -121,9 +143,19 @@ def sue_variance_per_query(ref_poses, preds, dists, num_NN=10, slope=350.0):
 
     return sue_var
 
+
 def auprc_from_scores(y_true, scores):
+    """
+    Computes the Area Under the Precision-Recall Curve (AUPRC).
+    Args:
+        y_true: Ground truth binary labels (0 or 1).
+        scores: Predicted scores or probabilities.
+    Returns:
+        AUPRC value.
+    """
     precision, recall, _ = precision_recall_curve(y_true, scores)
     return auc(recall, precision)
+
 
 def aurc_from_conf(y_correct, conf_scores):
     """
@@ -174,54 +206,13 @@ def aurc_from_conf(y_correct, conf_scores):
     return float(aurc), float(aurc_oracle)
 
 
-def parse_arguments():
-    parser = argparse.ArgumentParser()
-
-    # TRAIN split (da cui ricavi train/val)
-    parser.add_argument("--train-preds-dir", type=str, required=True)
-    parser.add_argument("--train-inliers-dir", type=str, required=True)
-    parser.add_argument("--train-z-data-path", type=str, required=True)
-
-    # TEST split (già ce l’hai)
-    parser.add_argument("--test-preds-dir", type=str, required=True)
-    parser.add_argument("--test-inliers-dir", type=str, required=True)
-    parser.add_argument("--test-z-data-path", type=str, required=True)
-
-    parser.add_argument("--positive-dist-threshold", type=int, default=25)
-
-    # split train->train/val
-    parser.add_argument("--val-ratio", type=float, default=0.15)
-    parser.add_argument("--split-mode", choices=["contiguous", "random"], default="contiguous")
-    parser.add_argument("--seed", type=int, default=42)
-
-    # logistic regressor
-    parser.add_argument("--Cs", type=str, default="0.01,0.1,1,10,100",
-                        help="comma-separated list for C grid-search on val")
-
-    # features
-    parser.add_argument("--features", type=str, default="inliers",
-                        help="comma-separated: inliers,l2,pa,sue")
-    #Threshold for inliers
-    parser.add_argument(
-        "--gate-percentiles",
-        type=str,
-        default="10,20,30",
-        help="percentili (su inliers del train_sub) per la soglia T del gating B1"
-    )
-
-
-    return parser.parse_args()
-
-
-
 def make_features(inliers_scores, preds, ref_poses, dists, features,
                   sue_numNN=10, sue_slope=50.0,gate_T=None):
     """
-    Ritorna X (N,D) con feature selezionate:
-      - inliers: num_inliers
-      - l2: dists[:,0]
-      - pa: dists[:,0]/dists[:,1]
-      - sue: varianza SUE (uncertainty)
+    Returns:
+      X: (N, D) feature matrix
+      names: list of feature names
+
     """
     feats = []
     names = []
@@ -261,7 +252,7 @@ def make_features(inliers_scores, preds, ref_poses, dists, features,
 
     X = np.stack(feats, axis=1)
     return X, names
-import numpy as np
+
 
 def compute_ausc(uncertainty_scores, labels):
     """
@@ -308,10 +299,13 @@ def compute_ausc(uncertainty_scores, labels):
 
 def oracle_ausc(y_true, return_curve=False):
     """
-    Oracle AUSC: rimuove prima TUTTI i campioni sbagliati (y=0), poi eventualmente i corretti.
-    È la sparsification curve ideale (best-case) per quel dataset.
-
-    Restituisce AUSC_oracle (e opzionalmente la curva).
+    Oracle AUSC: best possible ordering by uncertainty (1-y). Removes wrong predictions first. 
+    Lower is better.    
+    Args:
+        y_true (np.array): 1 for Correct, 0 for Wrong.
+        return_curve (bool): If True, also returns the sparsification curve.
+    Returns:
+        float: The Oracle AUSC value.
     """
     y = np.asarray(y_true).astype(float)
     N = len(y)
@@ -329,14 +323,55 @@ def oracle_ausc(y_true, return_curve=False):
 
 def ausc_gap_to_oracle(y_true, unc_scores):
     """
-    Gap rispetto all'oracle (più piccolo = meglio):
-      gap = AUSC_oracle - AUSC_method
+    Computes the AUSC gap to oracle.
+    Lower is better, 0 is optimal.
+    Args:
+        y_true (np.array): 1 for Correct, 0 for Wrong.
+        unc_scores (np.array): Higher value means MORE uncertain.
+    Returns:
+        float: AUSC gap to oracle.
     """
     ausc = compute_ausc(uncertainty_scores=unc_scores, labels=y_true)
     ausc_or = oracle_ausc(y_true)
     return float(ausc_or - ausc)
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+
+    # TRAIN split (for training/validation)
+    parser.add_argument("--train-preds-dir", type=str, required=True)
+    parser.add_argument("--train-inliers-dir", type=str, required=True)
+    parser.add_argument("--train-z-data-path", type=str, required=True)
+
+    # TEST split (for final evaluation)
+    parser.add_argument("--test-preds-dir", type=str, required=True)
+    parser.add_argument("--test-inliers-dir", type=str, required=True)
+    parser.add_argument("--test-z-data-path", type=str, required=True)
+
+    parser.add_argument("--positive-dist-threshold", type=int, default=25)
+
+    # split train->train/val
+    parser.add_argument("--val-ratio", type=float, default=0.15)
+    parser.add_argument("--split-mode", choices=["contiguous", "random"], default="contiguous")
+    parser.add_argument("--seed", type=int, default=42)
+
+    # logistic regressor
+    parser.add_argument("--Cs", type=str, default="0.01,0.1,1,10,100",
+                        help="comma-separated list for C grid-search on val")
+
+    # features
+    parser.add_argument("--features", type=str, default="inliers",
+                        help="comma-separated: inliers,l2,pa,sue")
+    #Threshold for inliers
+    parser.add_argument(
+        "--gate-percentiles",
+        type=str,
+        default="10,20,30",
+        help="percentili (su inliers del train_sub) per la soglia T del gating B1"
+    )
+
+    return parser.parse_args()
 
 def main(args):
     thr = args.positive_dist_threshold
@@ -415,7 +450,7 @@ def main(args):
         sue_numNN=10, sue_slope=50, gate_T=bestT
     )
 
-    # score: decision_function (più alto => più confidenza che sia corretto)
+    # score: decision_function (the higher, the more likely correct)
     test_scores = final_clf.decision_function(X_test)
     auc_logreg = auprc_from_scores(y_test, test_scores)
 
@@ -430,8 +465,6 @@ def main(args):
     auc_rand = compute_random(y_test)
 
     # === Score arrays (for calibration metrics) ===
-    # NB: qui 'scores' sono confidence scores (più alto => più confidente che sia corretto),
-    # coerenti con le baseline in baselines.py
     Nte = len(y_test)
 
     # L2 confidence: -d1 normalizzato in [0.1, 1.0]
@@ -439,7 +472,7 @@ def main(args):
     l2_scores = np.interp(l2_raw, (l2_raw.min(), l2_raw.max()), (0.1, 1.0))
 
     # PA confidence: -(d1/d2) normalizzato in [0.1, 1.0]
-    pa_raw = -np.array([float(dists_te[i][0]) / (float(dists_te[i][1]) + 1e-9) for i in range(Nte)], dtype=np.float64)
+    pa_raw = -np.array([float(dists_te[i][0]) / (float(dists_te[i][1]) + EPS) for i in range(Nte)], dtype=np.float64)
     pa_scores = np.interp(pa_raw, (pa_raw.min(), pa_raw.max()), (0.1, 1.0))
 
     # SUE confidence: -variance normalizzato in [0.1, 1.0]
