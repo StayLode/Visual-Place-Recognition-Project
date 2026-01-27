@@ -367,7 +367,7 @@ def parse_arguments():
     parser.add_argument(
         "--gate-percentiles",
         type=str,
-        default="10,20,30",
+        default="10,20,30,40,50,60,70,80,90",
         help="percentili (su inliers del train_sub) per la soglia T del gating B1"
     )
 
