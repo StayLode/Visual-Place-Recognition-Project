@@ -367,7 +367,7 @@ def parse_arguments():
     parser.add_argument(
         "--gate-percentiles",
         type=str,
-        default="10,20,30,40,50,60,70,80,90",
+        default="10,20,30",
         help="percentili (su inliers del train_sub) per la soglia T del gating B1"
     )
 
@@ -507,12 +507,12 @@ def main(args):
         aurc_val, aurc_oracle = aurc_from_conf(y_test, scores)
         print(f"{name:22s} | AURC={aurc_val: .4f} | oracle={aurc_oracle: .4f}")
      
-    print("\n=== TEST Sparsification (Risk-Coverage) ===") 
+    print("\n=== TEST Spearman R ===") 
     for name, scores in rows:
         s, _ = spearmanr(1-scores, y_test)
         print(f"{name:22s} | Spearman R={s: .4f}")
     
-    print("\n=== TEST Sparsification ===")
+    print("\n=== TEST AUSC:===")
     for name, scores in rows:
         ausc_val= compute_ausc(uncertainty_scores=1-scores, labels=y_test)
         ausc_oracle= oracle_ausc(y_test)
