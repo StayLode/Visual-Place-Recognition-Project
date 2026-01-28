@@ -28,7 +28,7 @@ def list_query_txts(preds_dir: str):
         list of .txt file paths
     """
     txt_files = glob(os.path.join(preds_dir, "*.txt"))
-    txt_files.sort(key=lambda x: int(Path(x).stem))  # assumes 0.txt, 1.txt, ...
+    txt_files.sort(key=lambda x: int(Path(x).stem)) # sort by query index
     return txt_files
 
 
@@ -420,7 +420,7 @@ def main(args):
                 bestT = T
                 best_feat_names = feat_names
 
-    # ricostruisci le feature su tutto il TRAIN usando il bestT trovato
+    # === Recompute features on FULL TRAIN with best T ===
     X_train_all, feat_names = make_features(
         inliers_train_all, preds_tr, ref_poses_tr, dists_tr, args.features,
         sue_numNN=10, sue_slope=50, gate_T=bestT
@@ -450,7 +450,7 @@ def main(args):
         sue_numNN=10, sue_slope=50, gate_T=bestT
     )
 
-    # score: decision_function (the higher, the more likely correct)
+
     test_scores = final_clf.decision_function(X_test)
     auc_logreg = auprc_from_scores(y_test, test_scores)
 
@@ -518,6 +518,17 @@ def main(args):
         ausc_oracle= oracle_ausc(y_test)
         print(f"{name:22s} | AUSC={ausc_val: .4f} | oracle={ausc_oracle: .4f} ")
 
+    
+    # Save scores for plotting curves (optional)
+    #probs=final_clf.predict_proba(X_test)[:, 1]
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_L2.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_Inliers_L2.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_pa.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_Inliers_L2_pa.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_Inliers_L2_gated.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Inliers.npy", np.array(inliers_test))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Probs_Inliers.npy", np.array(probs))
+    #np.save("curves_inliers/netvlad/svox_sun_svox_night/Y_test_l2.npy", np.array(y_test))
 
 if __name__ == "__main__":
     args = parse_arguments()
