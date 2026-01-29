@@ -219,7 +219,7 @@ def make_features(inliers_scores, preds, ref_poses, dists, features,
     features = [f.strip() for f in features.split(",") if f.strip()]
     N = len(inliers_scores)
 
-    # calcola SUE var solo se serve
+    # compute SUE variance if needed
     sue_var = None
     if "sue" in features:
         sue_var = sue_variance_per_query(ref_poses, preds, dists,
@@ -233,7 +233,7 @@ def make_features(inliers_scores, preds, ref_poses, dists, features,
             l2 = np.array([float(dists[i][0]) for i in range(N)], dtype=np.float32)
 
             if gate_T is None:
-                # comportamento vecchio (se non vuoi gating)
+                # l2 without gating
                 feats.append(-l2)
                 names.append("l2")
             else:
