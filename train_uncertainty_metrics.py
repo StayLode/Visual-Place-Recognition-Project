@@ -321,20 +321,6 @@ def oracle_ausc(y_true, return_curve=False):
     )
     
 
-def ausc_gap_to_oracle(y_true, unc_scores):
-    """
-    Computes the AUSC gap to oracle.
-    Lower is better, 0 is optimal.
-    Args:
-        y_true (np.array): 1 for Correct, 0 for Wrong.
-        unc_scores (np.array): Higher value means MORE uncertain.
-    Returns:
-        float: AUSC gap to oracle.
-    """
-    ausc = compute_ausc(uncertainty_scores=unc_scores, labels=y_true)
-    ausc_or = oracle_ausc(y_true)
-    return float(ausc_or - ausc)
-
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -467,18 +453,18 @@ def main(args):
     # === Score arrays (for calibration metrics) ===
     Nte = len(y_test)
 
-    # L2 confidence: -d1 normalizzato in [0.1, 1.0]
+    # L2 confidence: -d1 normalized in [0.1, 1.0]
     l2_raw = -np.array([float(dists_te[i][0]) for i in range(Nte)], dtype=np.float64)
     l2_scores = np.interp(l2_raw, (l2_raw.min(), l2_raw.max()), (0.1, 1.0))
 
-    # PA confidence: -(d1/d2) normalizzato in [0.1, 1.0]
+    # PA confidence: -(d1/d2) normalized in [0.1, 1.0]
     pa_raw = -np.array([float(dists_te[i][0]) / (float(dists_te[i][1]) + EPS) for i in range(Nte)], dtype=np.float64)
     pa_scores = np.interp(pa_raw, (pa_raw.min(), pa_raw.max()), (0.1, 1.0))
 
-    # SUE confidence: -variance normalizzato in [0.1, 1.0]
+    # SUE confidence: -variance normalized in [0.1, 1.0]
     sue_var_te = sue_variance_per_query(ref_poses_te, preds_te, dists_te, slope=350.0).astype(np.float64)
     sue_raw = -sue_var_te
-    # evita degenerate min==max
+    # avoid degenerate min==max
     if sue_raw.max() - sue_raw.min() < 1e-12:
         sue_scores = np.ones_like(sue_raw, dtype=np.float64)
     else:
